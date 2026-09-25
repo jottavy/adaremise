@@ -1,0 +1,170 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+
+import "../composants/Fiche.css";
+import "./Benevole.css";
+import { getAvatarFor } from "../utils/avatars";
+
+function Benevole({ setBenevole }) {
+
+    const [benevoles, setBenevoles] = useState([]);
+    const [recherche, setRecherche] = useState("");
+
+    const navigate = useNavigate();
+
+
+ // Récupération des bénévoles depuis l'API
+    useEffect(() => {
+
+        async function chargerBenevoles() {
+            try {
+                const response = await fetch(
+                    "http://localhost:3000/api/benevoles"
+                );
+
+                const data = await response.json();
+
+                setBenevoles(data);
+
+            } catch (error) {
+                console.error(
+                    "Erreur lors du chargement des bénévoles :",
+                    error
+                );
+            }
+        }
+
+        chargerBenevoles();
+
+    }, []);
+
+
+
+    // Recherche
+    const benevoleFiltres = benevoles.filter((benevole) =>
+        (benevole.prenom + " " + benevole.nom)
+            .toLowerCase()
+            .includes(recherche.toLowerCase())
+    );
+
+
+    // Sélection d'un bénévole
+    function handleClicProfil(benevole) {
+
+        // On garde le bénévole dans le state React
+        setBenevole(benevole);
+
+        // On le sauvegarde pour qu'il reste après F5
+        localStorage.setItem(
+            "benevole",
+            JSON.stringify(benevole)
+        );
+
+        // Direction dashboard
+        navigate("/dashboard");
+    }
+
+
+    return (
+
+        <div className="benevole-page">
+
+            <header className="benevole-topbar">
+                <div className="logo-container">
+                    <span className="logo-text">
+                        AdaRemise v1.0
+                    </span>
+                </div>
+            </header>
+
+
+            <div className="benevole-container">
+
+                <img  src="../../public/logo.png"   className="logo-icon"></img>
+
+
+                <h1 className="page-title">
+                    Bienvenue sur AdaRemise
+                </h1>
+                <p className="fiche-subtitle">
+                    Rien ne se perd, tout se réinvente !
+                </p>
+
+
+                <p className="description">
+                    Qui utilise l'application aujourd'hui ?
+                    Choisissez votre profil pour continuer.
+                </p>
+
+
+                <input
+                    className="champ-form search"
+                    type="text"
+                    placeholder="Rechercher un bénévole..."
+                    value={recherche}
+                    onChange={(event) =>
+                        setRecherche(event.target.value)
+                    }
+                />
+
+
+                <div className="benevole-list">
+
+                    {benevoleFiltres.map((benevole, index) => {
+
+                        const { emoji, couleur } = getAvatarFor(benevole.prenom, benevole.nom);
+
+                        return (
+
+                            <div
+                                className="benevole-card card"
+                                key={index}
+                                onClick={() =>
+                                    handleClicProfil(benevole)
+                                }
+                            >
+
+                                <div
+                                    className="benevole-avatar"
+                                    style={{
+                                        backgroundColor: couleur.fond,
+                                        color: couleur.texte,
+                                    }}
+                                >
+
+                                    {emoji}
+
+                                </div>
+
+
+                                <h2>
+                                    {benevole.prenom}{" "}
+                                    {benevole.nom}
+                                </h2>
+
+
+                                <span className="role">
+                                    👤 Bénévole
+                                </span>
+
+                            </div>
+
+                        );
+
+                    })}
+
+                </div>
+
+
+                <p className="footer">
+                    AdaRemise v1.0 — Logiciel de gestion de ressourcerie
+                </p>
+
+            </div>
+
+        </div>
+
+    );
+}
+
+export default Benevole;

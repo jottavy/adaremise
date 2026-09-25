@@ -1,0 +1,130 @@
+// Les points d'entrée d'API
+// 
+
+import { Router } from 'express';
+import pool from '../db.js';
+
+const depotsRouter = Router();
+
+// --------------------------------------------------
+// GET
+// --------------------------------------------------
+
+// Liste des dépôts avec le nombre d'objets et le nom de la donatrice
+depotsRouter.get("/", async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT depot.id, TO_CHAR(depot.date_depot, 'DD/MM/YYYY') AS date_depot , depot.type, count(objet.id), personne.nom, personne.prenom
+            FROM depot
+            JOIN personne ON depot.personne_id = personne.id
+            LEFT JOIN objet ON objet.depot_id = depot.id
+            GROUP BY depot.id, personne.nom, personne.prenom
+            ORDER BY depot.id DESC;
+        `);
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Erreur GET api/depots : ", err.message)
+        res.status(500).json({ error: err.message })
+    }
+});
+
+// Fiche d'un dépôt avec ses objets
+depotsRouter.get("/:id", async (req, res, next) => {
+    try {
+        const result = await pool.query(`
+            SELECT
+            depot.id,
+            TO_CHAR(depot.date_depot, 'DD/MM/YYYY') AS date_depot,
+            depot.type,
+            depot.personne_id,
+            personne.nom AS personne_nom,
+            personne.prenom AS personne_prenom,
+            personne.telephone AS personne_telephone,
+            COALESCE(json_agg(objet.id) FILTER (WHERE objet.id IS NOT NULL), '[]'::json) AS liste_objet_id,
+            COALESCE(json_agg(objet.libelle) FILTER (WHERE objet.id IS NOT NULL), '[]'::json) AS liste_objet,
+            COALESCE(json_agg(objet.prix) FILTER (WHERE objet.id IS NOT NULL), '[]'::json) AS liste_objet_prix
+            FROM depot
+            JOIN personne ON depot.personne_id = personne.id
+            LEFT JOIN objet ON objet.depot_id = depot.id
+            WHERE depot.id = $1
+            GROUP BY depot.id, personne.id;
+          `, [req.params.id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Dépôt non trouvé" });
+        }
+
+        res.json(result.rows); // À corriger : renvoyer un objet (rows[0]) au lieu d'un tableau
+
+        } catch (err) {
+            next(err);
+        }
+});
+
+
+// --------------------------------------------------
+// POST
+// --------------------------------------------------
+
+// Création d'un dépôt (personne, date, type)
+depotsRouter.post("/", async (req, res, next) => {
+    const { personne_id, date_depot, type } = req.body;
+
+    if (!personne_id || !type) {
+        return res.status(400).json({ error: "Veuillez sélectionner un donnateur" });
+    }
+
+    try {
+        const result = await pool.query(`
+            INSERT INTO depot (personne_id, date_depot, type)
+            VALUES ($1, $2, $3)
+            RETURNING *;
+        `, [personne_id, date_depot || new Date(), type]);
+
+        res.status(201).json(result.rows[0]);
+  
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Ajout d'un objet à un dépôt
+depotsRouter.post("/:id/objets", async (req, res, next) => {
+    const { libelle, poids_kg, etat_arrivee, statut, prix, date_mise_rayon, categorie_id } = req.body;
+    const depot_id = req.params.id;
+    const etats = ["bon_etat", "a_reparer", "hors_service"];
+
+
+    if (etat_arrivee && !etats.includes(etat_arrivee)) {
+        return res.status(400).json({ error: `L'état d'arrivée doit être l'un des suivants : ${etats.join(', ')}` });
+    }
+
+    const champsManquants = [];
+    if (!libelle) champsManquants.push('libelle');
+    if (!categorie_id) champsManquants.push('categorie_id');
+    if (!poids_kg) champsManquants.push('poids_kg');
+    if (!etat_arrivee) champsManquants.push('etat_arrivee');
+    if (!statut) champsManquants.push('statut');
+
+    if (champsManquants.length > 0) {
+        return res.status(400).json({
+            erreur: `Champ(s) manquant(s) : ${champsManquants.join(', ')}`
+        })
+    }
+
+    try {
+        const result = await pool.query(`
+            INSERT INTO objet (libelle, poids_kg, etat_arrivee, statut, prix, date_mise_rayon, categorie_id, depot_id)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            RETURNING *;
+        `, [libelle, poids_kg, etat_arrivee, statut, prix || null, date_mise_rayon|| null, categorie_id, depot_id]);
+
+        res.status(201).json(result.rows[0]);
+  
+    } catch (err) {
+        next(err);
+    }
+});
+
+export default depotsRouter;

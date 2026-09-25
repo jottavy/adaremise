@@ -1,0 +1,36 @@
+.statut-badge {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: inline-block;
+  text-align: center;
+  border: 1px solid;
+  border-color: color-mix(in srgb, currentColor 30%, transparent);
+}
+
+.statut-badge.recycle {
+  background-color: #E7F6D7;
+  color: #3F6212;
+}
+
+.statut-badge.en_reparation {
+  background-color: #FEF9C3;
+  color: #854D0E;
+}
+
+.statut-badge.vendu {
+  background-color: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.statut-badge.arrive {
+  background-color: #FFE4E6;
+  color: #BE123C;
+}
+
+.statut-badge.en_rayon {
+  background-color: #EEF1F0;
+  color: #475569;
+}

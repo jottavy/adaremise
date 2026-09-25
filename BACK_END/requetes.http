@@ -1,0 +1,245 @@
+# ==================================================
+
+# API La Remise — Requêtes de test
+
+# ==================================================
+
+# ==================================================
+
+# OBJETS
+
+# ==================================================
+
+### 200 - Liste des objets sans filtre
+
+GET http://localhost:3000/api/objets
+
+### 200 - Liste des objets filtrée par statut
+
+GET http://localhost:3000/api/objets?statut=recycle
+
+### 200 - Liste des objets filtrée par statut et catégorie
+
+GET http://localhost:3000/api/objets?statut=recycle&categorie_id=2
+
+### 200 - L'objet existe
+
+GET http://localhost:3000/api/objets/28
+
+### 404 - L'objet n'existe pas
+
+GET http://localhost:3000/api/objets/777
+
+# ==================================================
+
+# CATÉGORIES
+
+# ==================================================
+
+### 200 - Liste des catégories
+
+GET http://localhost:3000/api/categories
+
+# ==================================================
+
+# STATUTS
+
+# ==================================================
+
+### 200 - Liste des statuts
+
+GET http://localhost:3000/api/statuts
+
+# ==================================================
+
+# PATCH /api/objets/:id/statut
+
+# ==================================================
+
+### 200 - Changement de statut et de prix
+
+PATCH http://localhost:3000/api/objets/7/statut
+Content-Type: application/json
+
+{
+"statut": "en_rayon",
+"prix": 20
+}
+
+### 200 - Changement de statut seul
+
+PATCH http://localhost:3000/api/objets/7/statut
+Content-Type: application/json
+
+{
+"statut": "en_rayon"
+}
+
+### 400 - Statut non renseigné
+
+PATCH http://localhost:3000/api/objets/7/statut
+Content-Type: application/json
+
+{}
+
+### 400 - Statut invalide
+
+PATCH http://localhost:3000/api/objets/7/statut
+Content-Type: application/json
+
+{
+"statut": "en_vente"
+}
+
+### 404 - L'objet n'existe pas
+
+PATCH http://localhost:3000/api/objets/777/statut
+Content-Type: application/json
+
+{
+"statut": "en_rayon",
+"prix": 15
+}
+
+# ==================================================
+
+# PERSONNES
+
+# ==================================================
+
+### 200 - Liste des personnes
+
+GET http://localhost:3000/api/personnes
+
+### 201 - Création d'une personne
+
+POST http://localhost:3000/api/personnes
+Content-Type: application/json
+
+{
+"nom": "Lio",
+"prenom": "Jean-Paul",
+"telephone": "0667888890",
+"adherente": true
+}
+
+### 400 - Nom ou prénom manquant
+
+POST http://localhost:3000/api/personnes
+Content-Type: application/json
+
+{
+"nom": "Lio"
+}
+
+# ==================================================
+
+# DÉPÔTS
+
+# ==================================================
+
+### 200 - Liste des dépôts
+
+GET http://localhost:3000/api/depots
+
+### 200 - Fiche d'un dépôt avec ses objets
+
+GET http://localhost:3000/api/depots/6
+
+### 404 - Le dépôt n'existe pas
+
+GET http://localhost:3000/api/depots/777
+
+### 201 - Création d'un dépôt
+
+POST http://localhost:3000/api/depots
+Content-Type: application/json
+
+{
+"personne_id": 3,
+"type": "boutique",
+"date_depot": "2026-10-15"
+}
+
+### 400 - Personne ou type manquant
+
+POST http://localhost:3000/api/depots
+Content-Type: application/json
+
+{
+"date_depot": "2026-10-15"
+}
+
+# ==================================================
+
+# OBJETS DANS UN DÉPÔT
+
+# ==================================================
+
+### 201 - Ajout d'un objet à un dépôt
+
+POST http://localhost:3000/api/depots/5/objets
+Content-Type: application/json
+
+{
+"libelle": "Veste en jean",
+"poids_kg": 0.8,
+"etat_arrivee": "bon_etat",
+"statut": "arrive",
+"prix": 20,
+"date_mise_rayon": null,
+"categorie_id": 2
+}
+
+### 400 - Champ obligatoire manquant
+
+POST http://localhost:3000/api/depots/5/objets
+Content-Type: application/json
+
+{
+"libelle": "Veste en jean",
+"poids_kg": 0.8,
+"etat_arrivee": "bon_etat",
+"statut": "arrive"
+}
+
+### 400 - État d'arrivée invalide
+
+POST http://localhost:3000/api/depots/5/objets
+Content-Type: application/json
+
+{
+"libelle": "Veste en jean",
+"poids_kg": 0.8,
+"etat_arrivee": "toto",
+"statut": "arrive",
+"categorie_id": 2
+}
+
+# ==================================================
+
+# BÉNÉVOLES
+
+# ==================================================
+
+### 200 - Liste des bénévoles
+
+GET http://localhost:3000/api/benevoles
+
+# ==================================================
+
+# STATISTIQUES
+
+# ==================================================
+
+### 200 - Nombre d'objets par statut
+
+GET http://localhost:3000/api/stats/par-statut
+
+### 200 - Poids total reçu
+
+GET http://localhost:3000/api/stats/poids-total
+
+### 200 - Nombre d'objets en rayon
+
+GET http://localhost:3000/api/stats/en-rayon

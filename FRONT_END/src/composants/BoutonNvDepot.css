@@ -1,0 +1,27 @@
+.btn-nouveau-depot {
+    margin-left: auto;
+
+    padding: 10px 18px;
+    background-color: #ffffff;
+    color: #0F766E;
+
+    border: 1px solid #0F766E;
+    border-radius: 999px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-nouveau-depot:hover {
+    background-color: #E6F4F2;
+}
+
+.btn-nouveau-depot:disabled {
+    background: #e2e8f0;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+}

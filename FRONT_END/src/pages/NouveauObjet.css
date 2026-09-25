@@ -1,0 +1,7 @@
+/* Mise en page du formulaire d'ajout d'objet.
+   Le rendu (card, h3, form-group, champ-form, boutons, grille)
+   est fourni par App.css / Fiche.css. */
+
+.form-card {
+    margin-top: 24px;
+}

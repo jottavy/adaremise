@@ -1,0 +1,72 @@
+/* FicheDepot — layout spécifique (cartes info + tableau) */
+
+.cartes-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.carte-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  margin-bottom: 10px;
+}
+
+.carte-titre {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.carte-sous-texte {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.carte-tableau {
+  background: #fff;
+}
+
+.carte-tableau .table-container {
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  background: transparent;
+}
+
+.carte-tableau table {
+  background: #fff;
+}
+
+.tableau-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+}
+
+.tableau-entete h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.nombre-articles {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.nom-objet {
+  font-weight: 600;
+}
+
+.btn-ajouter-objet {
+  display: block;
+  min-width: 200px;
+  margin: 24px auto 0;
+}

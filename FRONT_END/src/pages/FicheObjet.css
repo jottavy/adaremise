@@ -1,0 +1,39 @@
+/* FicheObjet — layout spécifique (deux colonnes) */
+
+.fiche-content {
+  display: flex;
+  gap: 24px;
+}
+
+.left-column {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.right-column {
+  flex: 1;
+}
+
+.depot-user-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.depot-link {
+  font-size: 13px;
+  color: #64748b;
+}
